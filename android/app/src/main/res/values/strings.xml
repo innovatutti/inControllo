@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Parental Control</string>
+    <string name="accessibility_service_description">Questo servizio monitora le app in uso per bloccare quelle selezionate dal controllo parentale. Non raccoglie né condivide dati personali.</string>
+</resources>
