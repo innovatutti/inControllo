@@ -21,8 +21,11 @@ class AppMonitorService : AccessibilityService() {
                 return
             }
             
+            android.util.Log.d("AppMonitorService", "App aperta: $packageName, Bloccata: ${blockedApps.contains(packageName)}")
+            
             // Se l'app è bloccata, mostra schermata di blocco
             if (blockedApps.contains(packageName)) {
+                android.util.Log.d("AppMonitorService", "Blocco app: $packageName")
                 showBlockScreen(packageName)
             }
         }
@@ -45,6 +48,9 @@ class AppMonitorService : AccessibilityService() {
         super.onServiceConnected()
         // Servizio accessibilità connesso
         
+        // Carica le app bloccate salvate
+        loadBlockedApps()
+        
         // Gestisci il click sul pulsante di accessibilità
         accessibilityButtonController?.registerAccessibilityButtonCallback(
             object : android.accessibilityservice.AccessibilityButtonController.AccessibilityButtonCallback() {
@@ -60,6 +66,14 @@ class AppMonitorService : AccessibilityService() {
                 }
             }
         )
+    }
+    
+    private fun loadBlockedApps() {
+        val prefs = getSharedPreferences("parental_control", android.content.Context.MODE_PRIVATE)
+        val saved = prefs.getStringSet("blocked_apps", emptySet()) ?: emptySet()
+        blockedApps.clear()
+        blockedApps.addAll(saved)
+        android.util.Log.d("AppMonitorService", "App bloccate caricate: ${blockedApps.size} - ${blockedApps.joinToString(", ")}")
     }
     
     private fun openApp() {

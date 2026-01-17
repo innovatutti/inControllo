@@ -380,6 +380,12 @@ class _PinScreenState extends State<PinScreen> {
     await prefs.setString('app_pin', _enteredPin);
     await prefs.setString('security_question', _selectedQuestion!);
     await prefs.setString('security_answer', _answerController.text.trim().toLowerCase());
+    
+    // Verifica che sia stato salvato
+    final savedPin = prefs.getString('app_pin');
+    final savedQuestion = prefs.getString('security_question');
+    print('PIN salvato: ${savedPin != null}, Domanda salvata: ${savedQuestion != null}');
+    
     widget.onSuccess();
   }
 }

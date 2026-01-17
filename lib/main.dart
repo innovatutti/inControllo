@@ -41,6 +41,7 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
   bool _isLoading = true;
   bool _hasPIN = false;
   bool _isAuthenticated = false;
+  DateTime? _lastPausedTime;
 
   @override
   void initState() {
@@ -57,17 +58,26 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Quando l'app torna in foreground, richiedi il PIN
-    if (state == AppLifecycleState.resumed && _isAuthenticated) {
-      setState(() {
-        _isAuthenticated = false;
-      });
+    if (state == AppLifecycleState.paused) {
+      // App va in background - salva il tempo
+      _lastPausedTime = DateTime.now();
+    } else if (state == AppLifecycleState.resumed && _isAuthenticated) {
+      // App torna in foreground - richiedi PIN se sono passati più di 30 secondi
+      if (_lastPausedTime != null) {
+        final timeDiff = DateTime.now().difference(_lastPausedTime!);
+        if (timeDiff.inSeconds > 30) {
+          setState(() {
+            _isAuthenticated = false;
+          });
+        }
+      }
     }
   }
 
   Future<void> _checkPIN() async {
     final prefs = await SharedPreferences.getInstance();
     final savedPIN = prefs.getString('app_pin');
+    print('Verifica PIN: ${savedPIN != null ? "PIN trovato" : "PIN non trovato"}');
     setState(() {
       _hasPIN = savedPIN != null && savedPIN.isNotEmpty;
       _isLoading = false;

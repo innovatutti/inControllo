@@ -97,4 +97,33 @@ class DeviceAdminService {
       print("Errore richiesta admin: ${e.message}");
     }
   }
+
+  /// Verifica se il permesso overlay è concesso
+  Future<bool> isOverlayPermissionGranted() async {
+    try {
+      final bool result = await platform.invokeMethod('isOverlayPermissionGranted');
+      return result;
+    } on PlatformException catch (e) {
+      print("Errore verifica overlay: ${e.message}");
+      return false;
+    }
+  }
+
+  /// Richiede il permesso overlay (mostra sopra altre app)
+  Future<void> requestOverlayPermission() async {
+    try {
+      await platform.invokeMethod('requestOverlayPermission');
+    } on PlatformException catch (e) {
+      print("Errore richiesta overlay: ${e.message}");
+    }
+  }
+
+  /// Forza il ricaricamento delle app bloccate nel servizio
+  Future<void> reloadBlockedApps() async {
+    try {
+      await platform.invokeMethod('reloadBlockedApps');
+    } on PlatformException catch (e) {
+      print("Errore reload app bloccate: ${e.message}");
+    }
+  }
 }

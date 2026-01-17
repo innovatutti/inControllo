@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:parental_control/services/device_admin_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:parental_control/screens/diagnostics_screen.dart';
 
 class AppListScreen extends StatefulWidget {
   const AppListScreen({super.key});
@@ -113,6 +114,7 @@ class _AppListScreenState extends State<AppListScreen> {
           _blockedApps.remove(packageName);
         });
         await _saveBlockedApps();
+        await _deviceAdminService.reloadBlockedApps();
       }
     } else {
       success = await _deviceAdminService.blockApp(packageName);
@@ -121,6 +123,7 @@ class _AppListScreenState extends State<AppListScreen> {
           _blockedApps.add(packageName);
         });
         await _saveBlockedApps();
+        await _deviceAdminService.reloadBlockedApps();
       }
     }
 
@@ -149,6 +152,16 @@ class _AppListScreenState extends State<AppListScreen> {
         title: const Text('inControllo'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.medical_services),
+            tooltip: 'Diagnostica',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DiagnosticsScreen()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadApps,
